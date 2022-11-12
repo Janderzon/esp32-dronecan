@@ -7,10 +7,10 @@ class Esp32DroneCan
 {
 public:
     Esp32DroneCan(uint8_t);
-    bool Broadcast(BroadcastTransfer);
+    bool broadcast(BroadcastTransfer);
 
 private:
     uint8_t _nodeId;
-    bool SendCanMessage(uint32_t, uint8_t *, uint16_t);
+    bool sendCanMessage(uint32_t, uint8_t *, uint16_t);
 };
 #endif

@@ -17,7 +17,7 @@ Esp32DroneCan::Esp32DroneCan(uint8_t nodeId)
     }
 }
 
-bool Esp32DroneCan::Broadcast(BroadcastTransfer broadcastTransfer)
+bool Esp32DroneCan::broadcast(BroadcastTransfer broadcastTransfer)
 {
     if (broadcastTransfer.getPayload() == NULL || broadcastTransfer.getPayloadLength() > 7)
         return false;
@@ -31,10 +31,10 @@ bool Esp32DroneCan::Broadcast(BroadcastTransfer broadcastTransfer)
     memcpy(payloadWithTailByte, broadcastTransfer.getPayload(), broadcastTransfer.getPayloadLength());
     payloadWithTailByte[broadcastTransfer.getPayloadLength()] = 0xC0 | (broadcastTransfer.getTransferId() & 31);
 
-    SendCanMessage(canId, payloadWithTailByte, broadcastTransfer.getPayloadLength() + 1);
+    sendCanMessage(canId, payloadWithTailByte, broadcastTransfer.getPayloadLength() + 1);
 }
 
-bool SendCanMessage(uint32_t canId, uint8_t *payload, uint16_t payloadLength)
+bool sendCanMessage(uint32_t canId, uint8_t *payload, uint16_t payloadLength)
 {
     twai_message_t message;
     message.identifier = canId;

@@ -1,0 +1,19 @@
+{
+    "name": "Esp32DroneCan",
+    "version": "1.0.0",
+    "description": "Implements dronecan on esp32 based chips using the inbuilt twai drivers.",
+    "keywords": "can, dronecan, esp32, twai",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Janderzon/esp32-dronecan"
+    },
+    "authors": [
+        {
+            "name": "Janderzon",
+            "maintainer": true
+        }
+    ],
+    "license": "MIT",
+    "frameworks": "arduino",
+    "platforms": "espressif32"
+}
