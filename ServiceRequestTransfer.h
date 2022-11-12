@@ -4,7 +4,7 @@
 class ServiceRequestTransfer : public TransferBase
 {
 public:
-    ServiceRequestTransfer(int, int, uint8_t, uint8_t, uint8_t, uint8_t);
+    ServiceRequestTransfer(uint8_t *, uint16_t, int, uint8_t, uint8_t, uint8_t, uint8_t);
     uint8_t getSourceNodeId();
     uint8_t getDestinationNodeId();
 

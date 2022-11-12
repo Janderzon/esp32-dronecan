@@ -1,12 +1,13 @@
 #include "BroadcastTransfer.h"
 
 BroadcastTransfer::BroadcastTransfer(
-    int payload,
+    uint8_t *payload,
+    uint16_t payloadLength,
     int dataTypeId,
     uint8_t sourceNodeId,
     uint8_t priority,
     uint8_t transferId)
-    : TransferBase(payload, dataTypeId, priority, transferId)
+    : TransferBase(payload, payloadLength, dataTypeId, priority, transferId)
 {
     _sourceNodeId = sourceNodeId;
 }

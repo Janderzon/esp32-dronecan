@@ -4,7 +4,7 @@
 class BroadcastTransfer : public TransferBase
 {
 public:
-  BroadcastTransfer(int, int, uint8_t, uint8_t, uint8_t);
+  BroadcastTransfer(uint8_t *, uint16_t, int, uint8_t, uint8_t, uint8_t);
   uint8_t getSourceNodeId();
 
 private:

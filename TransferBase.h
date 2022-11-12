@@ -4,14 +4,16 @@
 class TransferBase
 {
 public:
-  TransferBase(int, int, uint8_t, uint8_t);
-  int getPayload();
+  TransferBase(uint8_t *, uint16_t, int, uint8_t, uint8_t);
+  uint8_t *getPayload();
+  uint16_t getPayloadLength();
   int getDataTypeId();
   uint8_t getPriority();
   uint8_t getTransferId();
 
 private:
-  int _payload;
+  uint8_t *_payload;
+  uint16_t _payloadLength;
   int _dataTypeId;
   uint8_t _priority;
   uint8_t _transferId;
