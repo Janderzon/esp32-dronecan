@@ -4,12 +4,12 @@
 class ServiceResponseTransfer : public TransferBase
 {
 public:
-    ServiceResponseTransfer(int, int, int, int, int, int);
-    int getSourceNodeId();
-    int getDestinationNodeId();
+    ServiceResponseTransfer(int, int, uint8_t, uint8_t, uint8_t, uint8_t);
+    uint8_t getSourceNodeId();
+    uint8_t getDestinationNodeId();
 
 private:
-    int _sourceNodeId;
-    int _destinationNodeId;
+    uint8_t _sourceNodeId;
+    uint8_t _destinationNodeId;
 };
 #endif

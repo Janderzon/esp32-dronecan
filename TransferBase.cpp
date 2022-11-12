@@ -3,8 +3,8 @@
 TransferBase::TransferBase(
     int payload,
     int dataTypeId,
-    int priority,
-    int transferId)
+    uint8_t priority,
+    uint8_t transferId)
 {
   _payload = payload;
   _dataTypeId = dataTypeId;
@@ -14,5 +14,5 @@ TransferBase::TransferBase(
 
 int TransferBase::getPayload() { return _payload; }
 int TransferBase::getDataTypeId() { return _dataTypeId; }
-int TransferBase::getPriority() { return _priority; }
-int TransferBase::getTransferId() { return _transferId; }
+uint8_t TransferBase::getPriority() { return _priority; }
+uint8_t TransferBase::getTransferId() { return _transferId; }

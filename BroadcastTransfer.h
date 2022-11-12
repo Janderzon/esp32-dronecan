@@ -4,10 +4,10 @@
 class BroadcastTransfer : public TransferBase
 {
 public:
-  BroadcastTransfer(int, int, int, int, int);
-  int getSourceNodeId();
+  BroadcastTransfer(int, int, uint8_t, uint8_t, uint8_t);
+  uint8_t getSourceNodeId();
 
 private:
-  int _sourceNodeId;
+  uint8_t _sourceNodeId;
 };
 #endif
