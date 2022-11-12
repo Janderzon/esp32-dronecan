@@ -3,7 +3,7 @@
 ServiceResponseTransfer::ServiceResponseTransfer(
     uint8_t *payload,
     uint16_t payloadLength,
-    int dataTypeId,
+    uint16_t dataTypeId,
     uint8_t sourceNodeId,
     uint8_t destinationNodeId,
     uint8_t priority,
