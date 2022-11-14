@@ -7,9 +7,9 @@ BroadcastTransfer::BroadcastTransfer(
     uint8_t sourceNodeId,
     uint8_t priority,
     uint8_t transferId)
-    : TransferBase(payload, payloadLength, dataTypeId, priority, transferId)
+    : TransferBase(payload, payloadLength, dataTypeId, priority, transferId),
+      _sourceNodeId(sourceNodeId)
 {
-    _sourceNodeId = sourceNodeId;
 }
 
 uint8_t BroadcastTransfer::getSourceNodeId() { return _sourceNodeId; }

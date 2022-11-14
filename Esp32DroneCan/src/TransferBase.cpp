@@ -6,12 +6,12 @@ TransferBase::TransferBase(
     uint16_t dataTypeId,
     uint8_t priority,
     uint8_t transferId)
+    : _payload(payload),
+      _payloadLength(payloadLength),
+      _dataTypeId(dataTypeId),
+      _priority(priority),
+      _transferId(transferId)
 {
-  _payload = payload;
-  _payloadLength = payloadLength;
-  _dataTypeId = dataTypeId;
-  _priority = priority;
-  _transferId = transferId;
 }
 
 uint8_t *TransferBase::getPayload() { return _payload; }

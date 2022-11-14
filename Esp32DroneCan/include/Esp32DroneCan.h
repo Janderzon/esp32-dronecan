@@ -1,5 +1,4 @@
-#ifndef Esp32DroneCan_h
-#define Esp32DroneCan_h
+#pragma once
 #include "BroadcastTransfer.h"
 #include "driver/gpio.h"
 #include "driver/twai.h"
@@ -13,4 +12,3 @@ private:
     uint8_t _nodeId;
     bool sendCanMessage(uint32_t, uint8_t *, uint16_t);
 };
-#endif

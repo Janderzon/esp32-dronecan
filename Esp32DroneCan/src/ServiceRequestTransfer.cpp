@@ -8,10 +8,10 @@ ServiceRequestTransfer::ServiceRequestTransfer(
     uint8_t destinationNodeId,
     uint8_t priority,
     uint8_t transferId)
-    : TransferBase(payload, payloadLength, dataTypeId, priority, transferId)
+    : TransferBase(payload, payloadLength, dataTypeId, priority, transferId),
+      _sourceNodeId(sourceNodeId),
+      _destinationNodeId(destinationNodeId)
 {
-    _sourceNodeId = sourceNodeId;
-    _destinationNodeId = destinationNodeId;
 }
 
 uint8_t ServiceRequestTransfer::getSourceNodeId() { return _sourceNodeId; }

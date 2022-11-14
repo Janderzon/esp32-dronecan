@@ -1,5 +1,4 @@
-#ifndef ServiceRequestTransfer_h
-#define ServiceRequestTransfer_h
+#pragma once
 #include "TransferBase.h"
 class ServiceRequestTransfer : public TransferBase
 {
@@ -12,4 +11,3 @@ private:
     uint8_t _sourceNodeId;
     uint8_t _destinationNodeId;
 };
-#endif

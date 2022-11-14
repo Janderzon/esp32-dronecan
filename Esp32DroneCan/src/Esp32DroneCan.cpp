@@ -1,10 +1,8 @@
 #include "Esp32DroneCan.h"
 
-Esp32DroneCan::Esp32DroneCan(uint8_t nodeId)
+Esp32DroneCan::Esp32DroneCan(uint8_t nodeId) : _nodeId(nodeId)
 {
-    _nodeId = nodeId;
-
-    twai_general_config_t gConfig = TWAI_GENERAL_CONFIG_DEFAULT(GPIO_NUM_21, GPIO_NUM_22, TWAI_MODE_NORMAL);
+    twai_general_config_t gConfig = TWAI_GENERAL_CONFIG_DEFAULT(GPIO_NUM_6, GPIO_NUM_7, TWAI_MODE_NORMAL);
     twai_timing_config_t tConfig = TWAI_TIMING_CONFIG_500KBITS();
     twai_filter_config_t fConfig = TWAI_FILTER_CONFIG_ACCEPT_ALL();
 
@@ -31,10 +29,10 @@ bool Esp32DroneCan::broadcast(BroadcastTransfer broadcastTransfer)
     memcpy(payloadWithTailByte, broadcastTransfer.getPayload(), broadcastTransfer.getPayloadLength());
     payloadWithTailByte[broadcastTransfer.getPayloadLength()] = 0xC0 | (broadcastTransfer.getTransferId() & 31);
 
-    sendCanMessage(canId, payloadWithTailByte, broadcastTransfer.getPayloadLength() + 1);
+    return this->sendCanMessage(canId, payloadWithTailByte, broadcastTransfer.getPayloadLength() + 1);
 }
 
-bool sendCanMessage(uint32_t canId, uint8_t *payload, uint16_t payloadLength)
+bool Esp32DroneCan::sendCanMessage(uint32_t canId, uint8_t *payload, uint16_t payloadLength)
 {
     twai_message_t message;
     message.identifier = canId;

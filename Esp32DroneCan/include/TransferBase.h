@@ -1,5 +1,4 @@
-#ifndef TransferBase_h
-#define TransferBase_h
+#pragma once
 #include "Arduino.h"
 class TransferBase
 {
@@ -18,4 +17,3 @@ private:
   uint8_t _priority;
   uint8_t _transferId;
 };
-#endif
