@@ -42,13 +42,18 @@ bool Esp32DroneCan::broadcast(BroadcastTransfer broadcastTransfer)
     payloadWithTailByte[broadcastTransfer.getPayloadLength()] =
         0xC0 | (broadcastTransfer.getTransferId() & 31);
 
-    return this->sendCanMessage(
+    return this->sendTwaiMessage(
         canId,
         payloadWithTailByte,
         broadcastTransfer.getPayloadLength() + 1);
 }
 
-bool Esp32DroneCan::sendCanMessage(
+TwaiMessageWithStatus Esp32DroneCan::awaitTransfer(int ticksToWait)
+{
+    return this->receiveTwaiMessage(pdMS_TO_TICKS(ticksToWait));
+}
+
+bool Esp32DroneCan::sendTwaiMessage(
     uint32_t canId,
     uint8_t *payload,
     uint16_t payloadLength)
@@ -62,40 +67,14 @@ bool Esp32DroneCan::sendCanMessage(
     return twai_transmit(&message, pdMS_TO_TICKS(1000)) == ESP_OK;
 }
 
-void Esp32DroneCan::onReceive(void (*callback)(twai_message_t))
-{
-    _onReceive = callback;
-
-    if (_interuptHandle)
-    {
-        esp_intr_free(_interuptHandle);
-        _interuptHandle = NULL;
-    }
-
-    if (callback)
-    {
-        esp_intr_alloc(
-            ETS_TWAI_INTR_SOURCE,
-            0,
-            Esp32DroneCan::onInterrupt,
-            this,
-            &_interuptHandle);
-    }
-}
-
-void Esp32DroneCan::onInterrupt(void *arg)
-{
-    ((Esp32DroneCan *)arg)->handleInterrupt();
-}
-
-void Esp32DroneCan::handleInterrupt()
-{
-    _onReceive(receiveCanMessage());
-}
-
-twai_message_t Esp32DroneCan::receiveCanMessage()
+TwaiMessageWithStatus Esp32DroneCan::receiveTwaiMessage(TickType_t ticksToWait)
 {
     twai_message_t message;
-    twai_receive(&message, pdMS_TO_TICKS(10000));
-    return message;
+    if (twai_receive(&message, ticksToWait) == ESP_OK)
+    {
+        TwaiMessageWithStatus twaiMessageWithStatus(message, true);
+        return twaiMessageWithStatus;
+    }
+    TwaiMessageWithStatus twaiMessageWithStatus(message, false);
+    return twaiMessageWithStatus;
 }
