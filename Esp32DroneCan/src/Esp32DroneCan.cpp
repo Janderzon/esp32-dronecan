@@ -37,21 +37,64 @@ bool Esp32DroneCan::broadcast(BroadcastTransfer broadcastTransfer, int timeout)
         broadcastTransfer.getPayload().size() > 7)
         return false;
 
-    if (broadcastTransfer.getPriority() > 31)
-        return false;
-
-    uint32_t canId = ((uint32_t)broadcastTransfer.getPriority() << 24) |
-                     ((uint32_t)broadcastTransfer.getDataTypeId() << 8) |
-                     (uint32_t)_nodeId;
-
     std::vector<uint8_t> payloadWithTailByte(broadcastTransfer.getPayload());
 
     payloadWithTailByte.push_back(0xC0 | (broadcastTransfer.getTransferId() & 31));
 
     return this->sendTwaiMessage(
-        canId,
+        this->getMessageFrameId(broadcastTransfer),
         payloadWithTailByte,
         pdMS_TO_TICKS(timeout));
+}
+
+int32_t Esp32DroneCan::getMessageFrameId(BroadcastTransfer transfer)
+{
+    if (transfer.getPriority() > 31)
+        Serial.println("Priority should not be above 31");
+
+    return ((uint32_t)transfer.getPriority() << 24) |
+           ((uint32_t)transfer.getDataTypeId() << 8) |
+           (uint32_t)_nodeId;
+}
+
+int32_t Esp32DroneCan::getServiceFrameId(ServiceRequestTransfer transfer)
+{
+    if (transfer.getPriority() > 31)
+        Serial.println("Priority should not be above 31");
+
+    if (transfer.getDataTypeId() > 256)
+        Serial.println("DataTypeId should not be above 256 for ServiceRequestTransfer");
+
+    if (transfer.getDestinationNodeId() > 127 ||
+        transfer.getDestinationNodeId() == 0)
+        Serial.println("DestinationNodeId must be between 1 and 127 inclusive.");
+
+    return ((uint32_t)transfer.getPriority() << 24) |
+           ((uint32_t)transfer.getDataTypeId() << 16) |
+           ((uint32_t)1 << 15) |
+           ((uint32_t)transfer.getDestinationNodeId() << 8) |
+           ((uint32_t)1 << 7) |
+           (uint32_t)_nodeId;
+}
+
+int32_t Esp32DroneCan::getServiceFrameId(ServiceResponseTransfer transfer)
+{
+    if (transfer.getPriority() > 31)
+        Serial.println("Priority should not be above 31");
+
+    if (transfer.getDataTypeId() > 256)
+        Serial.println("DataTypeId should not be above 256 for ServiceRequestTransfer");
+
+    if (transfer.getDestinationNodeId() > 127 ||
+        transfer.getDestinationNodeId() == 0)
+        Serial.println("DestinationNodeId must be between 1 and 127 inclusive.");
+
+    return ((uint32_t)transfer.getPriority() << 24) |
+           ((uint32_t)transfer.getDataTypeId() << 16) |
+           ((uint32_t)0 << 15) |
+           ((uint32_t)transfer.getDestinationNodeId() << 8) |
+           ((uint32_t)1 << 7) |
+           (uint32_t)_nodeId;
 }
 
 TwaiMessageWithStatus Esp32DroneCan::awaitTransfer()
@@ -65,12 +108,12 @@ TwaiMessageWithStatus Esp32DroneCan::awaitTransfer(int timeout)
 }
 
 bool Esp32DroneCan::sendTwaiMessage(
-    uint32_t canId,
+    uint32_t id,
     std::vector<uint8_t> payload,
     TickType_t ticksToWait)
 {
     twai_message_t message;
-    message.identifier = canId;
+    message.identifier = id;
     message.extd = 1;
     message.data_length_code = payload.size();
     for (int i = 0; i < payload.size(); i++)
