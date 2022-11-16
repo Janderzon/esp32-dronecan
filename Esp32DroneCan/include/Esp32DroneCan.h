@@ -8,14 +8,14 @@ class Esp32DroneCan
 {
 public:
     Esp32DroneCan(uint8_t, gpio_num_t, gpio_num_t);
-    bool broadcast(BroadcastTransfer);
+    ~Esp32DroneCan();
+    bool broadcast(BroadcastTransfer, int);
+    TwaiMessageWithStatus awaitTransfer();
     TwaiMessageWithStatus awaitTransfer(int);
 
 private:
     uint8_t _nodeId;
-    gpio_num_t _txPin;
-    gpio_num_t _rxPin;
     intr_handle_t _interuptHandle;
-    bool sendTwaiMessage(uint32_t, std::vector<uint8_t>);
+    bool sendTwaiMessage(uint32_t, std::vector<uint8_t>, TickType_t);
     TwaiMessageWithStatus receiveTwaiMessage(TickType_t);
 };
