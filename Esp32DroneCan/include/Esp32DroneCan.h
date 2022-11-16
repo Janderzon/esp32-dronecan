@@ -16,6 +16,6 @@ private:
     gpio_num_t _txPin;
     gpio_num_t _rxPin;
     intr_handle_t _interuptHandle;
-    bool sendTwaiMessage(uint32_t, uint8_t *, uint16_t);
+    bool sendTwaiMessage(uint32_t, std::vector<uint8_t>);
     TwaiMessageWithStatus receiveTwaiMessage(TickType_t);
 };

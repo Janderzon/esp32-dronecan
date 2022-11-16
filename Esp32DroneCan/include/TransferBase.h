@@ -1,19 +1,26 @@
 #pragma once
-#include "Arduino.h"
+#include <Arduino.h>
+#include <vector>
 class TransferBase
 {
 public:
-  TransferBase(uint8_t *, uint16_t, uint16_t, uint8_t, uint8_t);
-  uint8_t *getPayload();
-  uint16_t getPayloadLength();
-  uint16_t getDataTypeId();
-  uint8_t getPriority();
-  uint8_t getTransferId();
+  TransferBase(
+      std::vector<uint8_t> payload,
+      uint16_t dataTypeId,
+      uint8_t priority,
+      uint8_t transferId)
+      : _payload(payload),
+        _dataTypeId(dataTypeId),
+        _priority(priority),
+        _transferId(transferId) {}
+  std::vector<uint8_t> getPayload() const { return _payload; }
+  uint16_t getDataTypeId() const { return _dataTypeId; }
+  uint8_t getPriority() const { return _priority; }
+  uint8_t getTransferId() const { return _transferId; }
 
 private:
-  uint8_t *_payload;
-  uint16_t _payloadLength;
-  uint16_t _dataTypeId;
-  uint8_t _priority;
-  uint8_t _transferId;
+  const std::vector<uint8_t> _payload;
+  const uint16_t _dataTypeId;
+  const uint8_t _priority;
+  const uint8_t _transferId;
 };

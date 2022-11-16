@@ -24,8 +24,8 @@ Esp32DroneCan::Esp32DroneCan(uint8_t nodeId, gpio_num_t txPin, gpio_num_t rxPin)
 
 bool Esp32DroneCan::broadcast(BroadcastTransfer broadcastTransfer)
 {
-    if (broadcastTransfer.getPayload() == NULL ||
-        broadcastTransfer.getPayloadLength() > 7)
+    if (broadcastTransfer.getPayload().size() == 0 ||
+        broadcastTransfer.getPayload().size() > 7)
         return false;
 
     if (broadcastTransfer.getPriority() > 31)
@@ -35,17 +35,18 @@ bool Esp32DroneCan::broadcast(BroadcastTransfer broadcastTransfer)
                      ((uint32_t)broadcastTransfer.getDataTypeId() << 8) |
                      (uint32_t)_nodeId;
 
-    uint8_t payloadWithTailByte[8];
-    memcpy(payloadWithTailByte,
-           broadcastTransfer.getPayload(),
-           broadcastTransfer.getPayloadLength());
-    payloadWithTailByte[broadcastTransfer.getPayloadLength()] =
+    std::vector<uint8_t> payloadWithTailByte(broadcastTransfer.getPayload().size() + 1);
+    for (int i = 0; i < broadcastTransfer.getPayload().size(); i++)
+    {
+        payloadWithTailByte[i] = broadcastTransfer.getPayload()[i];
+    }
+
+    payloadWithTailByte[broadcastTransfer.getPayload().size()] =
         0xC0 | (broadcastTransfer.getTransferId() & 31);
 
     return this->sendTwaiMessage(
         canId,
-        payloadWithTailByte,
-        broadcastTransfer.getPayloadLength() + 1);
+        payloadWithTailByte);
 }
 
 TwaiMessageWithStatus Esp32DroneCan::awaitTransfer(int ticksToWait)
@@ -55,14 +56,16 @@ TwaiMessageWithStatus Esp32DroneCan::awaitTransfer(int ticksToWait)
 
 bool Esp32DroneCan::sendTwaiMessage(
     uint32_t canId,
-    uint8_t *payload,
-    uint16_t payloadLength)
+    std::vector<uint8_t> payload)
 {
     twai_message_t message;
     message.identifier = canId;
     message.extd = 1;
-    message.data_length_code = payloadLength;
-    memcpy(message.data, payload, payloadLength);
+    message.data_length_code = payload.size();
+    for (int i = 0; i < payload.size(); i++)
+    {
+        message.data[i] = payload[i];
+    }
 
     return twai_transmit(&message, pdMS_TO_TICKS(1000)) == ESP_OK;
 }

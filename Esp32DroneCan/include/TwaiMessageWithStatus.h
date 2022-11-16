@@ -5,10 +5,10 @@ class TwaiMessageWithStatus
 public:
     TwaiMessageWithStatus(twai_message_t message, bool success)
         : _message(message), _success(success){};
-    twai_message_t getMessage() { return _message; }
-    bool isSuccess() { return _success; }
+    twai_message_t getMessage() const { return _message; }
+    bool isSuccess() const { return _success; }
 
 private:
-    twai_message_t _message;
-    bool _success;
+    const twai_message_t _message;
+    const bool _success;
 };
