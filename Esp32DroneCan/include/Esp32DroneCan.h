@@ -19,8 +19,9 @@ private:
     uint8_t _nodeId;
     intr_handle_t _interuptHandle;
     int32_t getMessageFrameId(BroadcastTransfer);
-    int32_t Esp32DroneCan::getServiceFrameId(ServiceRequestTransfer);
-    int32_t Esp32DroneCan::getServiceFrameId(ServiceResponseTransfer);
-    bool sendTwaiMessage(uint32_t, std::vector<uint8_t>, TickType_t);
-    TwaiMessageWithStatus receiveTwaiMessage(TickType_t);
+    int32_t getServiceFrameId(ServiceRequestTransfer);
+    int32_t getServiceFrameId(ServiceResponseTransfer);
+    bool sendFrames(uint32_t, std::vector<uint8_t>, uint8_t, TickType_t);
+    bool sendFrame(uint32_t, std::vector<uint8_t>, TickType_t);
+    TwaiMessageWithStatus receiveFrame(TickType_t);
 };

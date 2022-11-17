@@ -31,19 +31,15 @@ Esp32DroneCan::~Esp32DroneCan()
     }
 }
 
-bool Esp32DroneCan::broadcast(BroadcastTransfer broadcastTransfer, int timeout)
+bool Esp32DroneCan::broadcast(BroadcastTransfer transfer, int timeout)
 {
-    if (broadcastTransfer.getPayload().size() == 0 ||
-        broadcastTransfer.getPayload().size() > 7)
+    if (transfer.getPayload().size() == 0)
         return false;
 
-    std::vector<uint8_t> payloadWithTailByte(broadcastTransfer.getPayload());
-
-    payloadWithTailByte.push_back(0xC0 | (broadcastTransfer.getTransferId() & 31));
-
-    return this->sendTwaiMessage(
-        this->getMessageFrameId(broadcastTransfer),
-        payloadWithTailByte,
+    return this->sendFrames(
+        this->getMessageFrameId(transfer),
+        transfer.getPayload(),
+        transfer.getTransferId(),
         pdMS_TO_TICKS(timeout));
 }
 
@@ -99,15 +95,54 @@ int32_t Esp32DroneCan::getServiceFrameId(ServiceResponseTransfer transfer)
 
 TwaiMessageWithStatus Esp32DroneCan::awaitTransfer()
 {
-    return this->receiveTwaiMessage(portMAX_DELAY);
+    return this->receiveFrame(portMAX_DELAY);
 }
 
 TwaiMessageWithStatus Esp32DroneCan::awaitTransfer(int timeout)
 {
-    return this->receiveTwaiMessage(pdMS_TO_TICKS(timeout));
+    return this->receiveFrame(pdMS_TO_TICKS(timeout));
 }
 
-bool Esp32DroneCan::sendTwaiMessage(
+bool Esp32DroneCan::sendFrames(
+    uint32_t frameId,
+    std::vector<uint8_t> payload,
+    uint8_t transferId,
+    TickType_t ticksToWait)
+{
+    const size_t maxDataBytesPerFrame = 7;
+    size_t bytesSent = 0;
+    bool toggle = false;
+    while (bytesSent < payload.size())
+    {
+        size_t bytesLeft = payload.size() - bytesSent;
+
+        uint8_t tailByte = 0;
+        if (bytesSent == 0)
+            tailByte |= 1 << 7;
+        if (bytesLeft <= maxDataBytesPerFrame)
+            tailByte |= 1 << 6;
+        tailByte |= toggle << 5;
+        tailByte |= transferId;
+
+        std::vector<uint8_t> framePayload;
+        size_t framePayloadSize = min(bytesLeft, maxDataBytesPerFrame);
+        for (int i = 0; i < framePayloadSize; i++)
+        {
+            framePayload.push_back(payload[i + bytesSent]);
+        }
+        framePayload.push_back(tailByte);
+
+        if (!this->sendFrame(frameId, framePayload, ticksToWait))
+            continue;
+
+        toggle = !toggle;
+        bytesSent += framePayload.size() - 1;
+    }
+
+    return true;
+}
+
+bool Esp32DroneCan::sendFrame(
     uint32_t id,
     std::vector<uint8_t> payload,
     TickType_t ticksToWait)
@@ -124,7 +159,7 @@ bool Esp32DroneCan::sendTwaiMessage(
     return twai_transmit(&message, ticksToWait) == ESP_OK;
 }
 
-TwaiMessageWithStatus Esp32DroneCan::receiveTwaiMessage(TickType_t ticksToWait)
+TwaiMessageWithStatus Esp32DroneCan::receiveFrame(TickType_t ticksToWait)
 {
     twai_message_t message;
     if (twai_receive(&message, ticksToWait) == ESP_OK)
