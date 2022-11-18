@@ -110,6 +110,13 @@ bool Esp32DroneCan::sendFrames(
     TickType_t ticksToWait)
 {
     const size_t maxDataBytesPerFrame = 7;
+    if (payload.size() > maxDataBytesPerFrame)
+    {
+        uint16_t crc = getTransferCrc(payload);
+        payload.insert(payload.begin(), crc & 0xFF);
+        payload.insert(payload.begin(), (crc >> 8) & 0xFF);
+    }
+
     size_t bytesSent = 0;
     bool toggle = false;
     while (bytesSent < payload.size())
@@ -140,6 +147,25 @@ bool Esp32DroneCan::sendFrames(
     }
 
     return true;
+}
+
+uint16_t Esp32DroneCan::getTransferCrc(std::vector<uint8_t> payload)
+{
+    uint16_t crc = 0xFFFFU;
+
+    for (uint8_t byte : payload)
+    {
+        crc ^= static_cast<uint16_t>(byte) << 8;
+        for (std::uint8_t bit = 8; bit > 0; --bit)
+        {
+            if (crc & 0x8000U)
+                crc = (crc << 1) ^ 0x1021U;
+            else
+                crc = (crc << 1);
+        }
+    }
+
+    return crc;
 }
 
 bool Esp32DroneCan::sendFrame(

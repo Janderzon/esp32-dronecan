@@ -21,6 +21,7 @@ private:
     int32_t getMessageFrameId(BroadcastTransfer);
     int32_t getServiceFrameId(ServiceRequestTransfer);
     int32_t getServiceFrameId(ServiceResponseTransfer);
+    uint16_t getTransferCrc(std::vector<uint8_t>);
     bool sendFrames(uint32_t, std::vector<uint8_t>, uint8_t, TickType_t);
     bool sendFrame(uint32_t, std::vector<uint8_t>, TickType_t);
     TwaiMessageWithStatus receiveFrame(TickType_t);
